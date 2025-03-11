@@ -12,8 +12,8 @@ return new class extends Migration {
 
             $table->string('title');
             $table->text('description');
-            $table->json('images')->nullable();
             $table->integer('price')->nullable();
+            $table->boolean('status');
 
             $table->timestamps();
         });
