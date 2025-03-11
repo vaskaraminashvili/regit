@@ -12,8 +12,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProductResource extends Resource
 {
@@ -26,7 +24,15 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 TextInput::make('title')
-                            ->required(),
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\RichEditor::make('description')
+                    ->required()
+                    ->columnSpanFull(),
+                TextInput::make('price')
+                    ->numeric(),
+               
+                Forms\Components\Toggle::make('status')
             ]);
     }
 
@@ -34,7 +40,7 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                 TextColumn::make('title'),
+                TextColumn::make('title'),
             ])
             ->filters([
                 //
@@ -59,9 +65,9 @@ class ProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProducts::route('/'),
+            'index'  => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
-            'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'edit'   => Pages\EditProduct::route('/{record}/edit'),
         ];
     }
 }
