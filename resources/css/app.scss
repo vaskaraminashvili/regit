@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+@media only screen and (max-width: 767.98px) {
+    .slider-slide-item .slide-img img {
+        height: auto;
+        max-width: 100%;
+    }
+    //.slider-area-wrapper * {
+    //    height: 200px;
+    //}
+
+    .slider-area-wrapper.home-2 .slider-slide-item {
+        height: 280px;
+    }
+
+
+}

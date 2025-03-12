@@ -13,7 +13,9 @@ class Product extends Model implements HasMedia
 
     protected $guarded = [];
 
-    protected $casts = [
-        'images' => 'array'
-    ];
+
+    protected function getMediaCollectionName(): string
+    {
+        return 'products';
+    }
 }
