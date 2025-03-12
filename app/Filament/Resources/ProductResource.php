@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -36,7 +37,13 @@ class ProductResource extends Resource
 
                         Forms\Components\Toggle::make('in_stock'),
                         Forms\Components\Toggle::make('status')
-                    ])->columns(3)
+                    ])->columns(3),
+                SpatieMediaLibraryFileUpload::make('images')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->columnSpanFull()
+                    ->multiple()
+                    ->reorderable()
+                    ->collection('products')
             ]);
     }
 
