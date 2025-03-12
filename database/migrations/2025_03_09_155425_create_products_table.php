@@ -13,7 +13,8 @@ return new class extends Migration {
             $table->string('title');
             $table->text('description');
             $table->integer('price')->nullable();
-            $table->boolean('status');
+            $table->boolean('in_stock')->default(true);
+            $table->boolean('status')->default(true);
 
             $table->timestamps();
         });

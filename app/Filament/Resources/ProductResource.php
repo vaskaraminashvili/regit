@@ -29,10 +29,14 @@ class ProductResource extends Resource
                 Forms\Components\RichEditor::make('description')
                     ->required()
                     ->columnSpanFull(),
-                TextInput::make('price')
-                    ->numeric(),
-               
-                Forms\Components\Toggle::make('status')
+                Forms\Components\Section::make()
+                    ->schema([
+                        TextInput::make('price')
+                            ->numeric(),
+
+                        Forms\Components\Toggle::make('in_stock'),
+                        Forms\Components\Toggle::make('status')
+                    ])->columns(3)
             ]);
     }
 
