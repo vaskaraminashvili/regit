@@ -1,17 +1,52 @@
 @import 'tailwindcss';
 
+.logo_img {
+    max-width: 130px;
+}
+
+.header-area {
+    padding: 10px 0;
+}
+
+.slider-slide-item .slide-img img {
+    object-fit: cover;
+}
+
+.con-info-txt a {
+    color: #1b1b1c;
+}
+
+.contact-info-item:hover .con-info-icon {
+    color: #FFFFFF;
+}
+
 @media only screen and (max-width: 767.98px) {
     .slider-slide-item .slide-img img {
         height: auto;
         max-width: 100%;
     }
-    //.slider-area-wrapper * {
-    //    height: 200px;
-    //}
 
     .slider-area-wrapper.home-2 .slider-slide-item {
         height: 280px;
     }
 
 
+}
+
+.icon-box {
+    text-align: center;
+    border: 1px solid #eeb644;
+    border-radius: 100px;
+    color: #eeb644;
+    font-size: 25px;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    line-height: 43px;
+    height: 45px;
+    width: 45px;
+    margin-right: 10px;
+
+    a {
+        color: #eeb644;
+    }
 }

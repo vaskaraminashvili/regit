@@ -5,9 +5,9 @@
             <div class="slider-slide-item bg-img">
                 <div class="container-fluid h-100">
                     <div class="row align-items-center h-100">
-                        <div class="col-lg-12 order-0 order-lg-1">
-                            <div class="slide-img">
-                                <img src="assets/banner1.jpg" alt="Slider"/>
+                        <div class="col-lg-12 order-0 order-lg-1 h-100 ">
+                            <div class="slide-img h-100">
+                                <img class="img-fluid w-100 h-100" src="assets/banner1.jpg" alt="Slider"/>
                             </div>
                         </div>
                     </div>
@@ -16,9 +16,9 @@
             <div class="slider-slide-item bg-img">
                 <div class="container-fluid h-100">
                     <div class="row align-items-center h-100">
-                        <div class="col-lg-12 order-0 order-lg-1">
-                            <div class="slide-img">
-                                <img src="assets/banner2.jpg" alt="Slider"/>
+                        <div class="col-lg-12 order-0 order-lg-1 h-100">
+                            <div class="slide-img h-100">
+                                <img class="img-fluid w-100 h-100" src="assets/banner2.jpg" alt="Slider"/>
                             </div>
                         </div>
                     </div>
