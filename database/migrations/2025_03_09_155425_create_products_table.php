@@ -12,8 +12,9 @@ return new class extends Migration {
 
             $table->string('title');
             $table->text('description');
-            $table->json('images')->nullable();
             $table->integer('price')->nullable();
+            $table->boolean('in_stock')->default(true);
+            $table->boolean('status')->default(true);
 
             $table->timestamps();
         });

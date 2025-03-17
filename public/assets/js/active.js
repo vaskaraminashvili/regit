@@ -1,5 +1,5 @@
 /*global jQuery */
-(function($) {
+(function ($) {
     "use strict";
 
     /*===============================
@@ -18,13 +18,13 @@
 
     ==================================*/
 
-    jQuery(document).ready(function($) {
+    jQuery(document).ready(function ($) {
 
         /*--------------------------
             01. Background Image JS
         ---------------------------*/
         var bgSelector = $("[data-bg]");
-        bgSelector.each(function(index, elem) {
+        bgSelector.each(function (index, elem) {
             var element = $(elem),
                 bgSource = element.data('bg');
             element.css('background-image', 'url(' + bgSource + ')');
@@ -33,11 +33,11 @@
         /*-------------------------
           02. Countdown JS
         -----------------------------*/
-        $(".ht-countdown").each(function(index, element) {
+        $(".ht-countdown").each(function (index, element) {
             var $element = $(element),
                 $date = $element.data('date');
 
-            $element.countdown($date, function(event) {
+            $element.countdown($date, function (event) {
                 var $this = $(this).html(event.strftime(''
 
                     +
@@ -60,12 +60,12 @@
         });
 
         var resCanvasWrapper = $(".off-canvas-menu");
-        $(".btn-menu").on('click', function() {
+        $(".btn-menu").on('click', function () {
             resCanvasWrapper.addClass('active');
             $("body").addClass('fix');
         });
 
-        $(".off-canvas-overlay, .btn-close").on('click', function() {
+        $(".off-canvas-overlay, .btn-close").on('click', function () {
             $(".off-canvas-wrapper").removeClass('active');
             $("body").removeClass('fix');
         });
@@ -100,7 +100,7 @@
             zoom: {
                 enabled: true,
                 duration: 400,
-                opener: function(element) {
+                opener: function (element) {
                     return element.find('img');
                 }
             }
@@ -108,7 +108,7 @@
 
         // Custom Gallery on Button Click
         var galleryBtnPopup = $(".btn-gallery-popup");
-        galleryBtnPopup.on('click', function(event) {
+        galleryBtnPopup.on('click', function (event) {
             event.preventDefault();
 
             var gallery = $(this).attr('href');
@@ -134,7 +134,7 @@
            05. Scroll top Button JS
         ------------------------------*/
 
-        $(".btn-scroll-top").on('click', function() {
+        $(".btn-scroll-top").on('click', function () {
             $('html, body').animate({
                 scrollTop: 0
             }, 1500);
@@ -147,14 +147,14 @@
         const form = $('#contact-form'),
             formMessages = $('.form-message');
 
-        $(form).submit(function(e) {
+        $(form).submit(function (e) {
             e.preventDefault();
             var formData = form.serialize();
             $.ajax({
                 type: 'POST',
                 url: form.attr('action'),
                 data: formData
-            }).done(function(response) {
+            }).done(function (response) {
                 // Make sure that the formMessages div has the 'success' class.
                 $(formMessages).removeClass('alert alert-danger');
                 $(formMessages).addClass('alert alert-success fade show');
@@ -165,7 +165,7 @@
 
                 // Clear the form.
                 $('#contact-form input,#contact-form textarea').val('');
-            }).fail(function(data) {
+            }).fail(function (data) {
                 // Make sure that the formMessages div has the 'error' class.
                 $(formMessages).removeClass('alert alert-success');
                 $(formMessages).addClass('alert alert-danger fade show');
@@ -214,7 +214,7 @@
         var layoutSelector = $(".layout-switcher li"),
             areaWrap = $(".product-layout");
 
-        layoutSelector.on('click', function() {
+        layoutSelector.on('click', function () {
             var viewMode = $(this).data("layout");
 
             layoutSelector.removeClass('active');
@@ -229,7 +229,7 @@
         var proQty = $(".pro-qty");
         proQty.append('<a href="#" class="inc qty-btn">+</a>');
         proQty.append('<a href="#" class= "dec qty-btn">-</a>');
-        $('.qty-btn').on('click', function(e) {
+        $('.qty-btn').on('click', function (e) {
             e.preventDefault();
             var $button = $(this);
             var oldValue = $button.parent().find('input').val();
@@ -249,11 +249,11 @@
         /*--------------------------------------
           10. Checkout Page Checkbox Accordion
         ----------------------------------------*/
-        $("#create_pwd").on("change", function() {
+        $("#create_pwd").on("change", function () {
             $(".account-create").slideToggle("100");
         });
 
-        $("#ship_to_different").on("change", function() {
+        $("#ship_to_different").on("change", function () {
             $(".ship-to-different").slideToggle("100");
         });
 
@@ -266,15 +266,15 @@
         $(".slider-content-active").slick({
             slidesToShow: 1,
             dots: true,
-            adaptiveHeight: true,
             nextArrow: '<button class="slick-next"><i class="ion-chevron-right"></i></button>',
             prevArrow: '<button class="slick-prev"><i class="ion-chevron-left"></i></button>',
             responsive: [{
                 breakpoint: 992,
                 settings: {
+                    dots: false,
                     arrows: false
                 }
-            }, ]
+            },]
         });
 
         // Best Product Slider Js
@@ -283,12 +283,12 @@
             slidesToScroll: 2,
             arrows: false,
             responsive: [{
-                    breakpoint: 480,
-                    settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1
-                    }
-                },
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            },
                 {
                     breakpoint: 767,
                     settings: {
@@ -320,12 +320,12 @@
             arrows: false,
             infinite: true,
             responsive: [{
-                    breakpoint: 480,
-                    settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1
-                    }
-                },
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            },
                 {
                     breakpoint: 600,
                     settings: {
@@ -372,7 +372,7 @@
 
     }); //End Ready Function
 
-    jQuery(window).on('scroll', function() {
+    jQuery(window).on('scroll', function () {
         //Scroll top Hide Show
         if ($(window).scrollTop() >= 400) {
             $('.btn-scroll-top').addClass('show');
