@@ -3,23 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $products = Product::query()
-            ->where('status', 1)
+            ->where('status', true)
             ->get();
+
         return view('product.index', compact('products'));
     }
 
-    public function show($product)
+    public function show(Product $product): View
     {
-        $product = Product::query()
-            ->where('id', $product)
-            ->where('status', 1)
-            ->first();
+        abort_unless($product->status, 404);
 
         return view('product.show', compact('product'));
     }

@@ -27,6 +27,11 @@ class ProductResource extends Resource
                 TextInput::make('title')
                     ->required()
                     ->columnSpanFull(),
+                TextInput::make('sku')
+                    ->label('SKU')
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(255)
+                    ->columnSpanFull(),
                 Forms\Components\RichEditor::make('description')
                     ->required()
                     ->columnSpanFull(),
@@ -51,7 +56,15 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('title'),
+                TextColumn::make('sku')
+                    ->label('SKU')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('title')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('price')
+                    ->sortable(),
             ])
             ->filters([
                 //

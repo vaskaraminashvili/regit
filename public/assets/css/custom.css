@@ -7,3 +7,96 @@
 
     }
 }
+
+.site-action .login-reg-nav {
+    align-items: center;
+    margin: 0;
+    gap: 0;
+}
+
+.site-action .login-reg-nav li {
+    margin-right: 40px;
+}
+
+.site-action .login-reg-nav li:last-child {
+    margin-right: 0;
+}
+
+.site-action .user-account-dropdown {
+    position: relative;
+}
+
+.site-action .user-account-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.site-action .user-account-toggle .fa {
+    font-size: 12px;
+}
+
+.site-action .user-account-menu {
+    min-width: 180px;
+    padding: 8px 0;
+    margin-top: 8px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.site-action .user-account-menu .dropdown-item {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1b1b1c;
+    padding: 8px 16px;
+    text-transform: none;
+}
+
+.site-action .user-account-menu .dropdown-item:hover,
+.site-action .user-account-menu .dropdown-item:focus {
+    background: #f7f7f7;
+    color: #eeb644;
+}
+
+.site-action .user-account-menu .logout-dropdown-btn {
+    width: 100%;
+    background: none;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.site-action .user-account-menu .logout-dropdown-btn i {
+    margin-right: 6px;
+}
+
+.order-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: none;
+}
+
+.order-status--pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.order-status--processing {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.order-status--completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.order-status--cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+

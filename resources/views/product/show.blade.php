@@ -42,6 +42,9 @@
                                 <div class="product-details-info-content-wrap">
                                     <div class="prod-details-info-content">
                                         <h2>{{$product->title}}</h2>
+                                        @if($product->sku)
+                                            <p class="mb-2"><strong>SKU:</strong> {{ $product->sku }}</p>
+                                        @endif
                                         <p
                                             @class([
                                                 'text-success' => $product->in_stock,
@@ -56,6 +59,13 @@
                                             {!! $product->description !!}
                                         </div>
 
+                                        @if($product->in_stock)
+                                            <form method="POST" action="{{ route('cart.add', $product) }}" class="mt-4 d-flex align-items-center gap-3">
+                                                @csrf
+                                                <input type="number" name="quantity" value="1" min="1" max="99" class="form-control" style="width:100px;">
+                                                <button type="submit" class="btn btn-brand">კალათაში დამატება</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

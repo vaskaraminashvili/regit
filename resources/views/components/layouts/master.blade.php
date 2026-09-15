@@ -128,7 +128,7 @@
         <div class="off-canvas-content">
             <div class="off-canvas-header">
                 <div class="logo">
-                    <a href="index.html"><img src="{{asset('assets/logo.png')}}" class="img-fluid" alt="Logo"/></a>
+                    <a href="{{ route('home') }}"><img src="{{asset('assets/logo.png')}}" class="img-fluid" alt="Logo"/></a>
                 </div>
                 <div class="close-btn">
                     <button class="btn-close"><i class="ion-android-close"></i></button>
