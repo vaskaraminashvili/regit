@@ -8,4 +8,14 @@ class PagesController extends Controller
     {
         return view('pages.contact');
     }
+
+    public function installation()
+    {
+        return view('pages.installation');
+    }
+
+    public function installment()
+    {
+        return view('pages.installment');
+    }
 }

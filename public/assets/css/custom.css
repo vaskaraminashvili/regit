@@ -1,0 +1,9 @@
+@media(max-width: 500px){
+    .logo_img {
+        max-width: 80px;
+    }
+    .nav {
+        flex-direction: column;
+
+    }
+}

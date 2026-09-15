@@ -2,19 +2,18 @@
 <header class="header-area">
     <div class="container container-wide">
         <div class="row align-items-center">
-            <div class="col-4 col-sm-4 col-lg-2">
+            <div class="col-2 col-sm-4 col-lg-2">
                 <div class="site-logo text-center text-sm-start">
-                    <a href="/"><img src="assets/logo.png" class="logo_img img-fluid" alt="Logo"/></a>
+                    <a href="/"><img src="{{asset('assets/logo.png')}}" class="logo_img img-fluid" alt="Logo"/></a>
                 </div>
             </div>
 
-            <div class="col-8 col-lg-6">
+            <div class="col-10 col-lg-6 offset-lg-1">
                 <div class="site-navigation ms-4 ms-lg-0">
                     <ul class="main-menu nav">
-                        <li><a href="/">მთავარი</a>
-
-                        </li>
-
+                        <li><a href="/">მთავარი</a></li>
+                        <li><a href="{{route('pages.installation')}}">მონტაჟის სერვისი</a></li>
+                        <li><a href="{{route('pages.installment')}}">განვადება</a></li>
                         <li><a href="{{route('pages.contact')}}">კონტაქტი</a></li>
                     </ul>
                 </div>
