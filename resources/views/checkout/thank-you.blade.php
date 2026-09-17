@@ -11,6 +11,13 @@
                             {{ __("order_status.{$order->status}") }}
                         </span>
                     </p>
+                    @if($order->payment_method === 'bog_installment')
+                        <p>გადახდა: <strong>განვადება საქართველოს ბანკით</strong>
+                            @if($order->installment_months)
+                                ({{ $order->installment_months }} თვე)
+                            @endif
+                        </p>
+                    @endif
 
                     <div class="table-responsive mt-4 text-start">
                         <table class="table table-bordered">

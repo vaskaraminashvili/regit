@@ -14,6 +14,7 @@ class Order extends Model
     {
         return [
             'total' => 'integer',
+            'installment_months' => 'integer',
         ];
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BogCallbackController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
@@ -20,9 +21,13 @@ Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.a
 Route::patch('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
 
+Route::post('/bog/callback', BogCallbackController::class)->name('bog.callback');
+
 Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout/installment', [CheckoutController::class, 'storeInstallment'])->name('checkout.installment');
+    Route::get('/checkout/installment/{order}/fail', [CheckoutController::class, 'installmentFail'])->name('checkout.installment.fail');
     Route::get('/orders/{order}/thank-you', [CheckoutController::class, 'thankYou'])->name('orders.thank-you');
 
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');

@@ -54,6 +54,21 @@ class OrderResource extends Resource
                     ->schema([
                         Infolists\Components\TextEntry::make('id')->label('Order #'),
                         Infolists\Components\TextEntry::make('status')->badge(),
+                        Infolists\Components\TextEntry::make('payment_method')
+                            ->label('Payment')
+                            ->formatStateUsing(fn ($state): string => $state === 'bog_installment' ? 'BOG installment' : 'Standard')
+                            ->badge()
+                            ->color(fn ($state): string => $state === 'bog_installment' ? 'warning' : 'gray'),
+                        Infolists\Components\TextEntry::make('installment_months')
+                            ->label('Months')
+                            ->placeholder('—'),
+                        Infolists\Components\TextEntry::make('payment_status')
+                            ->label('BOG status')
+                            ->placeholder('—'),
+                        Infolists\Components\TextEntry::make('bog_order_id')
+                            ->label('BOG order ID')
+                            ->placeholder('—')
+                            ->copyable(),
                         Infolists\Components\TextEntry::make('total')->suffix(' ₾'),
                         Infolists\Components\TextEntry::make('created_at')->dateTime(),
                     ])->columns(4),
@@ -99,6 +114,11 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('total')
                     ->suffix(' ₾')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('payment_method')
+                    ->label('Payment')
+                    ->formatStateUsing(fn ($state): string => $state === 'bog_installment' ? 'BOG installment' : 'Standard')
+                    ->badge()
+                    ->color(fn ($state): string => $state === 'bog_installment' ? 'warning' : 'gray'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->colors([

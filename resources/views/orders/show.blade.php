@@ -16,6 +16,16 @@
                                 {{ __("order_status.{$order->status}") }}
                             </span>
                         </p>
+                        <p class="mb-1"><strong>გადახდა:</strong>
+                            @if($order->payment_method === 'bog_installment')
+                                განვადება საქართველოს ბანკით
+                                @if($order->installment_months)
+                                    ({{ $order->installment_months }} თვე)
+                                @endif
+                            @else
+                                სტანდარტული შეკვეთა
+                            @endif
+                        </p>
                         <p class="mb-1"><strong>მიმღები:</strong> {{ $order->name }}, {{ $order->phone }}</p>
                         <p class="mb-0"><strong>მისამართი:</strong> {{ $order->city }}, {{ $order->address }}</p>
                         @if($order->notes)
