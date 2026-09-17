@@ -15,7 +15,13 @@ class OrderItem extends Model
             'price' => 'integer',
             'quantity' => 'integer',
             'line_total' => 'integer',
+            'with_installation' => 'boolean',
         ];
+    }
+
+    public function installationLabel(): string
+    {
+        return $this->with_installation ? 'მონტაჟით' : 'მონტაჟის გარეშე';
     }
 
     public function order(): BelongsTo

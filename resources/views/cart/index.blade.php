@@ -37,6 +37,7 @@
                                                         <form method="POST" action="{{ route('cart.remove', $product) }}">
                                                             @csrf
                                                             @method('DELETE')
+                                                            <input type="hidden" name="with_installation" value="{{ $item['with_installation'] ? 1 : 0 }}">
                                                             <button type="submit"><i class="fa fa-trash-o"></i></button>
                                                         </form>
                                                     </div>
@@ -50,14 +51,17 @@
                                                         @if($product->sku)
                                                             <br><small>SKU: {{ $product->sku }}</small>
                                                         @endif
+                                                        <br>
+                                                        <x-installation-status :with-installation="$item['with_installation']" />
                                                     </a>
                                                 </div>
                                             </td>
-                                            <td><span class="price">{{ $product->price }} ₾</span></td>
+                                            <td><span class="price">{{ $item['unit_price'] }} ₾</span></td>
                                             <td>
                                                 <form method="POST" action="{{ route('cart.update', $product) }}" class="d-inline-flex align-items-center gap-2">
                                                     @csrf
                                                     @method('PATCH')
+                                                    <input type="hidden" name="with_installation" value="{{ $item['with_installation'] ? 1 : 0 }}">
                                                     <input type="number" name="quantity" min="1" max="99" value="{{ $item['quantity'] }}" class="form-control" style="width:80px;">
                                                     <button type="submit" class="btn btn-sm btn-outline-secondary">განახლება</button>
                                                 </form>

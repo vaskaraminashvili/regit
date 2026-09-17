@@ -12,41 +12,51 @@ class CartService
 
     public function items(): array
     {
-        return Session::get(self::SESSION_KEY, []);
+        return $this->normalized(Session::get(self::SESSION_KEY, []));
     }
 
     public function count(): int
     {
-        return (int) array_sum($this->items());
+        return (int) collect($this->items())->sum('quantity');
     }
 
-    public function add(Product $product, int $quantity = 1): void
+    public function add(Product $product, int $quantity = 1, bool $withInstallation = false): void
     {
         $cart = $this->items();
-        $productId = (string) $product->id;
-        $cart[$productId] = ($cart[$productId] ?? 0) + max(1, $quantity);
-        Session::put(self::SESSION_KEY, $cart);
+        $key = $this->itemKey($product->id, $withInstallation);
+
+        $cart[$key] = [
+            'product_id' => (int) $product->id,
+            'quantity' => ($cart[$key]['quantity'] ?? 0) + max(1, $quantity),
+            'with_installation' => $withInstallation,
+        ];
+
+        $this->save($cart);
     }
 
-    public function update(Product $product, int $quantity): void
+    public function update(Product $product, int $quantity, bool $withInstallation = false): void
     {
         $cart = $this->items();
-        $productId = (string) $product->id;
+        $key = $this->itemKey($product->id, $withInstallation);
 
         if ($quantity <= 0) {
-            unset($cart[$productId]);
+            unset($cart[$key]);
         } else {
-            $cart[$productId] = $quantity;
+            $cart[$key] = [
+                'product_id' => (int) $product->id,
+                'quantity' => $quantity,
+                'with_installation' => $withInstallation,
+            ];
         }
 
-        Session::put(self::SESSION_KEY, $cart);
+        $this->save($cart);
     }
 
-    public function remove(Product $product): void
+    public function remove(Product $product, bool $withInstallation = false): void
     {
         $cart = $this->items();
-        unset($cart[(string) $product->id]);
-        Session::put(self::SESSION_KEY, $cart);
+        unset($cart[$this->itemKey($product->id, $withInstallation)]);
+        $this->save($cart);
     }
 
     public function clear(): void
@@ -60,7 +70,7 @@ class CartService
     }
 
     /**
-     * @return Collection<int, array{product: Product, quantity: int, line_total: int}>
+     * @return Collection<int, array{product: Product, quantity: int, with_installation: bool, unit_price: int, line_total: int}>
      */
     public function detailedItems(): Collection
     {
@@ -71,23 +81,29 @@ class CartService
         }
 
         $products = Product::query()
-            ->whereIn('id', array_keys($cart))
+            ->whereIn('id', collect($cart)->pluck('product_id'))
             ->where('status', true)
             ->get()
             ->keyBy('id');
 
         return collect($cart)
-            ->map(function (int $quantity, string $productId) use ($products) {
-                $product = $products->get((int) $productId);
+            ->map(function (array $item) use ($products) {
+                $product = $products->get((int) $item['product_id']);
 
                 if (! $product) {
                     return null;
                 }
 
+                $withInstallation = (bool) $item['with_installation'];
+                $quantity = (int) $item['quantity'];
+                $unitPrice = $product->unitPrice($withInstallation);
+
                 return [
                     'product' => $product,
                     'quantity' => $quantity,
-                    'line_total' => (int) $product->price * $quantity,
+                    'with_installation' => $withInstallation,
+                    'unit_price' => $unitPrice,
+                    'line_total' => $unitPrice * $quantity,
                 ];
             })
             ->filter()
@@ -101,13 +117,67 @@ class CartService
 
     public function merge(array $guestCart): void
     {
-        $cart = $this->items();
+        foreach ($this->normalized($guestCart) as $item) {
+            $product = Product::query()->find($item['product_id']);
 
-        foreach ($guestCart as $productId => $quantity) {
-            $productId = (string) $productId;
-            $cart[$productId] = ($cart[$productId] ?? 0) + (int) $quantity;
+            if (! $product) {
+                continue;
+            }
+
+            $this->add($product, (int) $item['quantity'], (bool) $item['with_installation']);
+        }
+    }
+
+    protected function itemKey(int|string $productId, bool $withInstallation): string
+    {
+        return $productId.':'.($withInstallation ? '1' : '0');
+    }
+
+    /**
+     * @param  array<string|int, mixed>  $cart
+     * @return array<string, array{product_id: int, quantity: int, with_installation: bool}>
+     */
+    protected function normalized(array $cart): array
+    {
+        $normalized = [];
+
+        foreach ($cart as $key => $value) {
+            if (is_int($value) || (is_numeric($value) && ! is_array($value))) {
+                $productId = (int) $key;
+                $normalized[$this->itemKey($productId, false)] = [
+                    'product_id' => $productId,
+                    'quantity' => (int) $value,
+                    'with_installation' => false,
+                ];
+
+                continue;
+            }
+
+            if (! is_array($value)) {
+                continue;
+            }
+
+            $withInstallation = (bool) ($value['with_installation'] ?? false);
+            $productId = (int) ($value['product_id'] ?? explode(':', (string) $key)[0]);
+
+            $normalized[$this->itemKey($productId, $withInstallation)] = [
+                'product_id' => $productId,
+                'quantity' => (int) ($value['quantity'] ?? 0),
+                'with_installation' => $withInstallation,
+            ];
         }
 
-        Session::put(self::SESSION_KEY, $cart);
+        return array_filter(
+            $normalized,
+            fn (array $item) => $item['product_id'] > 0 && $item['quantity'] > 0
+        );
+    }
+
+    /**
+     * @param  array<string, array{product_id: int, quantity: int, with_installation: bool}>  $cart
+     */
+    protected function save(array $cart): void
+    {
+        Session::put(self::SESSION_KEY, $this->normalized($cart));
     }
 }

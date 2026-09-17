@@ -15,6 +15,7 @@ class UpdateCartRequest extends FormRequest
     {
         return [
             'quantity' => ['required', 'integer', 'min:0', 'max:99'],
+            'with_installation' => ['nullable', 'boolean'],
         ];
     }
 }

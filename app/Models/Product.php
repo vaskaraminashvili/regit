@@ -22,6 +22,11 @@ class Product extends Model implements HasMedia
         ];
     }
 
+    public function unitPrice(bool $withInstallation = false): int
+    {
+        return (int) $this->price + ($withInstallation ? (int) config('shop.installation_fee') : 0);
+    }
+
     protected function getMediaCollectionName(): string
     {
         return 'products';

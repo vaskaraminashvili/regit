@@ -46,7 +46,11 @@
                         <ul class="list-unstyled">
                             @foreach($items as $item)
                                 <li class="d-flex justify-content-between mb-2">
-                                    <span>{{ $item['product']->title }} × {{ $item['quantity'] }}</span>
+                                    <span>
+                                        {{ $item['product']->title }} × {{ $item['quantity'] }}
+                                        <br>
+                                        <x-installation-status :with-installation="$item['with_installation']" />
+                                    </span>
                                     <strong>{{ $item['line_total'] }} ₾</strong>
                                 </li>
                             @endforeach

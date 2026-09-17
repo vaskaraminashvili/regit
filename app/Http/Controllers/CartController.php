@@ -7,14 +7,14 @@ use App\Http\Requests\Cart\UpdateCartRequest;
 use App\Models\Product;
 use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CartController extends Controller
 {
     public function __construct(
         protected CartService $cart
-    ) {
-    }
+    ) {}
 
     public function index(): View
     {
@@ -28,7 +28,11 @@ class CartController extends Controller
     {
         abort_unless($product->status && $product->in_stock, 404);
 
-        $this->cart->add($product, (int) $request->validated('quantity', 1));
+        $this->cart->add(
+            $product,
+            (int) $request->validated('quantity', 1),
+            $request->boolean('with_installation')
+        );
 
         return redirect()
             ->route('cart.index')
@@ -37,16 +41,20 @@ class CartController extends Controller
 
     public function update(UpdateCartRequest $request, Product $product): RedirectResponse
     {
-        $this->cart->update($product, (int) $request->validated('quantity'));
+        $this->cart->update(
+            $product,
+            (int) $request->validated('quantity'),
+            $request->boolean('with_installation')
+        );
 
         return redirect()
             ->route('cart.index')
             ->with('success', 'კალათა განახლდა.');
     }
 
-    public function remove(Product $product): RedirectResponse
+    public function remove(Request $request, Product $product): RedirectResponse
     {
-        $this->cart->remove($product);
+        $this->cart->remove($product, $request->boolean('with_installation'));
 
         return redirect()
             ->route('cart.index')

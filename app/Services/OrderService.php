@@ -11,8 +11,7 @@ class OrderService
 {
     public function __construct(
         protected CartService $cart
-    ) {
-    }
+    ) {}
 
     public function placeOrder(User $user, array $data): Order
     {
@@ -51,7 +50,8 @@ class OrderService
                     'product_id' => $product->id,
                     'sku' => $product->sku,
                     'title' => $product->title,
-                    'price' => (int) $product->price,
+                    'with_installation' => $item['with_installation'],
+                    'price' => $item['unit_price'],
                     'quantity' => $item['quantity'],
                     'line_total' => $item['line_total'],
                 ]);

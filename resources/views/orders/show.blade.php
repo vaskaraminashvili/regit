@@ -37,7 +37,11 @@
                             <tbody>
                             @foreach($order->items as $item)
                                 <tr>
-                                    <td>{{ $item->title }}</td>
+                                    <td>
+                                        {{ $item->title }}
+                                        <br>
+                                        <x-installation-status :with-installation="$item->with_installation" />
+                                    </td>
                                     <td>{{ $item->sku ?? '—' }}</td>
                                     <td>{{ $item->price }} ₾</td>
                                     <td>{{ $item->quantity }}</td>

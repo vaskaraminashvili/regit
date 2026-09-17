@@ -71,11 +71,16 @@ class OrderResource extends Resource
                     ->schema([
                         Infolists\Components\TextEntry::make('title'),
                         Infolists\Components\TextEntry::make('sku')->label('SKU'),
+                        Infolists\Components\TextEntry::make('with_installation')
+                            ->label('Installation')
+                            ->formatStateUsing(fn ($state): string => $state ? 'With service' : 'Without service')
+                            ->badge()
+                            ->color(fn ($state): string => $state ? 'warning' : 'gray'),
                         Infolists\Components\TextEntry::make('price')->suffix(' ₾'),
                         Infolists\Components\TextEntry::make('quantity'),
                         Infolists\Components\TextEntry::make('line_total')->suffix(' ₾'),
                     ])
-                    ->columns(5)
+                    ->columns(6)
                     ->columnSpanFull(),
             ]);
     }

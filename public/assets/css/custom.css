@@ -100,3 +100,138 @@
     color: #721c24;
 }
 
+.install-badge {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.install-badge--yes {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.install-badge--no {
+    background: #f1f1f1;
+    color: #555;
+}
+
+#install-block {
+    margin: 16px 0;
+}
+
+#install-block * {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#install-block .r-title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1b1b1c;
+    margin-bottom: 12px;
+    display: block;
+    line-height: 1.4;
+}
+
+#install-block .r-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    width: 100%;
+}
+
+#install-block .r-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid #dfe5ea;
+    background: #fff;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border-color .25s ease, background .25s ease, transform .25s ease;
+}
+
+#install-block .r-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+#install-block .r-card.animate-in {
+    animation: r-fadein .45s ease forwards;
+}
+
+#install-block .r-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
+}
+
+#install-block .r-card.selected,
+#install-block .r-card:has(input:checked) {
+    border-color: #eeb644;
+    background: #fff9eb;
+    box-shadow: 0 0 0 1px rgba(238, 182, 68, .18), 0 10px 24px rgba(238, 182, 68, .16);
+}
+
+#install-block .r-card-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1b1b1c;
+}
+
+#install-block .r-card-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#install-block .r-card-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #eeb644;
+}
+
+#install-block .r-card-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #eeb644;
+    color: #1b1b1c;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+#install-block .r-card.selected .r-card-check,
+#install-block .r-card:has(input:checked) .r-card-check {
+    display: flex;
+}
+
+#install-block input[type=radio] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes r-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

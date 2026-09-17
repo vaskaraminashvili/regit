@@ -15,6 +15,7 @@ class AddToCartRequest extends FormRequest
     {
         return [
             'quantity' => ['nullable', 'integer', 'min:1', 'max:99'],
+            'with_installation' => ['nullable', 'boolean'],
         ];
     }
 }
