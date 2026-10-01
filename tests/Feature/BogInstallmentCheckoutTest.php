@@ -16,8 +16,11 @@ class BogInstallmentCheckoutTest extends TestCase
     public function test_checkout_shows_bog_installment_block(): void
     {
         config([
+            'services.bog.public_key' => null,
+            'services.bog.secret_key' => null,
             'services.bog.client_id' => null,
             'services.bog.client_secret' => null,
+            'services.bog.sandbox' => true,
         ]);
         $user = User::factory()->create();
         $product = $this->product();
@@ -33,6 +36,34 @@ class BogInstallmentCheckoutTest extends TestCase
             ->assertSee('მოითხოვე განვადება')
             ->assertSee('Sandbox / ტესტი')
             ->assertSee('აირჩიეთ განვადების ვადა');
+    }
+
+    public function test_checkout_embeds_bog_installment_modal_with_public_key(): void
+    {
+        config([
+            'services.bog.public_key' => '10009502',
+            'services.bog.client_id' => null,
+            'services.bog.client_secret' => null,
+            'services.bog.sandbox' => true,
+        ]);
+
+        $user = User::factory()->create();
+        $product = $this->product();
+
+        $this->actingAs($user)
+            ->post(route('cart.add', $product), ['quantity' => 1])
+            ->assertRedirect();
+
+        $this->actingAs($user)
+            ->get(route('checkout.create'))
+            ->assertOk()
+            ->assertSee('bog-sdk.js?version=2&client_id=10009502', false)
+            ->assertSee('BOG.Calculator.open', false)
+            ->assertSee('successCb(result.data.orderId)', false)
+            ->assertSee('return false;', false)
+            ->assertSee('onComplete', false)
+            ->assertSee('payload.redirectUrl', false)
+            ->assertDontSee('Sandbox / ტესტი');
     }
 
     public function test_checkout_loads_bog_sdk_when_configured(): void

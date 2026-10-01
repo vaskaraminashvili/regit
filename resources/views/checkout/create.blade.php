@@ -5,10 +5,10 @@
                 <div class="col-lg-7">
                     <h2 class="mb-4">შეკვეთის გაფორმება</h2>
 
-                    @if($errors->any())
+                    @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
-                                @foreach($errors->all() as $error)
+                                @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
@@ -21,36 +21,40 @@
                         @csrf
                         <div class="mb-3">
                             <label class="form-label">სახელი</label>
-                            <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
+                            <input type="text" name="name" class="form-control"
+                                value="{{ old('name', $user->name) }}" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">ტელეფონი</label>
-                            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" required>
+                            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">ქალაქი</label>
-                            <input type="text" name="city" class="form-control" value="{{ old('city') }}" required>
+                            <input type="text" name="city" class="form-control" value="{{ old('city') }}"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">მისამართი</label>
-                            <input type="text" name="address" class="form-control" value="{{ old('address') }}" required>
+                            <input type="text" name="address" class="form-control" value="{{ old('address') }}"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">შენიშვნა</label>
                             <textarea name="notes" class="form-control" rows="3">{{ old('notes') }}</textarea>
                         </div>
-                        <button type="submit" class="btn btn-brand">შეკვეთის დადასტურება</button>
                     </form>
 
-                    <div class="checkout-installment mt-4"
-                         data-configured="{{ $bogConfigured ? '1' : '0' }}"
-                         data-sandbox="{{ $bogSandbox ? '1' : '0' }}">
+                    <div class="checkout-installment mt-4" data-sdk="{{ $bogPublicKey ? '1' : '0' }}"
+                        data-configured="{{ $bogConfigured ? '1' : '0' }}" data-sandbox="{{ $bogSandbox ? '1' : '0' }}">
                         <div class="checkout-installment__card">
-                            <img src="{{ asset('assets/installment/bog.jpeg') }}" alt="Bank of Georgia" class="checkout-installment__logo">
+                            <img src="{{ asset('assets/installment/bog.jpeg') }}" alt="Bank of Georgia"
+                                class="checkout-installment__logo">
                             <div class="checkout-installment__copy">
                                 <p class="checkout-installment__title mb-1">განვადება საქართველოს ბანკით</p>
-                                <p class="checkout-installment__text mb-3">აირჩიეთ განვადების პირობები და გადაიხადეთ ყოველთვიურად.</p>
-                                @if($bogSandbox)
+                                <p class="checkout-installment__text mb-3">აირჩიეთ განვადების პირობები და გადაიხადეთ
+                                    ყოველთვიურად.</p>
+                                @if ($bogSandbox && !$bogPublicKey)
                                     <span class="checkout-installment__badge">Sandbox / ტესტი</span>
                                 @endif
                             </div>
@@ -64,7 +68,7 @@
                     <div class="border p-3">
                         <h4 class="mb-3">შეკვეთის შეჯამება</h4>
                         <ul class="list-unstyled">
-                            @foreach($items as $item)
+                            @foreach ($items as $item)
                                 <li class="d-flex justify-content-between mb-2">
                                     <span>
                                         {{ $item['product']->title }} × {{ $item['quantity'] }}
@@ -99,29 +103,41 @@
         </div>
     </div>
 
-    @if($bogConfigured)
-        <script src="https://webstatic.bog.ge/bog-sdk/bog-sdk.js?version=2&client_id={{ $bogClientId }}"></script>
+    @if ($bogPublicKey)
+        <script src="https://webstatic.bog.ge/bog-sdk/bog-sdk.js?version=2&client_id={{ $bogPublicKey }}"></script>
     @endif
     <script>
-        (function () {
+        (function() {
             var form = document.getElementById('checkout-form');
             var errorBox = document.getElementById('checkout-installment-error');
             var button = document.getElementById('bog-installment-button');
             var box = document.querySelector('.checkout-installment');
             var demoModal = document.getElementById('bog-demo-modal');
-            var configured = box.getAttribute('data-configured') === '1';
+            var sdkEnabled = box.getAttribute('data-sdk') === '1';
             var amount = {{ (int) $total }};
             var endpoint = @json(route('checkout.installment'));
             var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             function showError(message) {
+                if (!errorBox) {
+                    return;
+                }
                 errorBox.textContent = message;
                 errorBox.classList.remove('d-none');
             }
 
             function hideError() {
+                if (!errorBox) {
+                    return;
+                }
                 errorBox.classList.add('d-none');
                 errorBox.textContent = '';
+            }
+
+            function closeCalculator() {
+                if (window.BOG && window.BOG.Calculator && typeof window.BOG.Calculator.close === 'function') {
+                    window.BOG.Calculator.close();
+                }
             }
 
             function requestInstallment(month, discountCode, successCb, closeCb) {
@@ -132,26 +148,31 @@
                 }
 
                 fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': csrf,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: body
-                })
-                    .then(function (response) {
-                        return response.json().then(function (data) {
-                            return { ok: response.ok, data: data };
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrf,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: body
+                    })
+                    .then(function(response) {
+                        return response.json().then(function(data) {
+                            return {
+                                ok: response.ok,
+                                data: data
+                            };
                         });
                     })
-                    .then(function (result) {
+                    .then(function(result) {
                         if (result.ok && result.data.orderId) {
-                            if (result.data.demo && result.data.redirectUrl) {
-                                window.location.href = result.data.redirectUrl;
-                                return;
-                            }
-                            if (successCb) {
+                            if (typeof successCb === 'function') {
+                                if (result.data.demo) {
+                                    showError(
+                                        'განვადების გასაგრძელებლად საჭიროა საქართველოს ბანკის API გასაღებები.');
+                                    closeCalculator();
+                                    return;
+                                }
                                 successCb(result.data.orderId);
                                 return;
                             }
@@ -168,10 +189,18 @@
                             message = Object.values(result.data.errors).flat().join(' ');
                         }
                         showError(message);
+                        if (typeof successCb === 'function') {
+                            closeCalculator();
+                            return;
+                        }
                         if (closeCb) closeCb();
                     })
-                    .catch(function () {
+                    .catch(function() {
                         showError('განვადების შეკვეთა ვერ შეიქმნა.');
+                        if (typeof successCb === 'function') {
+                            closeCalculator();
+                            return;
+                        }
                         if (closeCb) closeCb();
                     });
             }
@@ -191,28 +220,36 @@
                     return;
                 }
 
-                if (!configured || !window.BOG || !window.BOG.Calculator) {
+                if (!sdkEnabled || !window.BOG || !window.BOG.Calculator) {
                     openDemoModal();
                     return;
                 }
 
                 window.BOG.Calculator.open({
                     amount: amount,
-                    onRequest: function (selected, successCb, closeCb) {
+                    onClose: function() {},
+                    onRequest: function(selected, successCb, closeCb) {
                         requestInstallment(selected.month, selected.discount_code, successCb, closeCb);
+                        return false;
+                    },
+                    onComplete: function(payload) {
+                        if (payload && payload.redirectUrl) {
+                            window.location.href = payload.redirectUrl;
+                            return false;
+                        }
                     }
                 });
             }
 
             button.addEventListener('click', openCalculator);
             document.getElementById('bog-demo-close').addEventListener('click', closeDemoModal);
-            demoModal.addEventListener('click', function (event) {
+            demoModal.addEventListener('click', function(event) {
                 if (event.target === demoModal) {
                     closeDemoModal();
                 }
             });
-            document.querySelectorAll('.bog-demo-plan').forEach(function (planButton) {
-                planButton.addEventListener('click', function () {
+            document.querySelectorAll('.bog-demo-plan').forEach(function(planButton) {
+                planButton.addEventListener('click', function() {
                     closeDemoModal();
                     requestInstallment(planButton.getAttribute('data-month'), 'standard');
                 });

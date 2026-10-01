@@ -37,8 +37,10 @@ return [
 
     'bog' => [
         'sandbox' => filter_var(env('BOG_SANDBOX', true), FILTER_VALIDATE_BOOLEAN),
-        'client_id' => env('BOG_CLIENT_ID'),
-        'client_secret' => env('BOG_CLIENT_SECRET'),
+        'public_key' => env('BOG_PUBLIC_KEY'),
+        'secret_key' => env('BOG_SECRET_KEY'),
+        'client_id' => env('BOG_CLIENT_ID', env('BOG_PUBLIC_KEY')),
+        'client_secret' => env('BOG_CLIENT_SECRET', env('BOG_SECRET_KEY')),
         'token_url' => env('BOG_TOKEN_URL'),
         'orders_url' => env('BOG_ORDERS_URL'),
         'verify_callback' => env('BOG_VERIFY_CALLBACK', true),

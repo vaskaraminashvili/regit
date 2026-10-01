@@ -33,7 +33,7 @@ class CheckoutController extends Controller
             'total' => $this->cart->total(),
             'user' => auth()->user(),
             'bogConfigured' => $this->bog->isConfigured(),
-            'bogClientId' => config('services.bog.client_id'),
+            'bogPublicKey' => config('services.bog.public_key') ?: config('services.bog.client_id'),
             'bogSandbox' => $this->bog->isSandbox(),
         ]);
     }

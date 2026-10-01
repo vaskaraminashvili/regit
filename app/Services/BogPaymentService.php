@@ -11,7 +11,29 @@ class BogPaymentService
 {
     public function isConfigured(): bool
     {
-        return filled(config('services.bog.client_id')) && filled(config('services.bog.client_secret'));
+        return filled($this->clientId()) && filled($this->clientSecret());
+    }
+
+    public function clientId(): string
+    {
+        $clientId = config('services.bog.client_id');
+
+        if (filled($clientId)) {
+            return (string) $clientId;
+        }
+
+        return (string) config('services.bog.public_key');
+    }
+
+    public function clientSecret(): string
+    {
+        $secret = config('services.bog.client_secret');
+
+        if (filled($secret)) {
+            return (string) $secret;
+        }
+
+        return (string) config('services.bog.secret_key');
     }
 
     public function createInstallmentOrder(array $payload, int $months, ?string $discountCode = null): string
@@ -77,10 +99,7 @@ class BogPaymentService
     {
         return Cache::remember('bog.access_token.'.($this->isSandbox() ? 'sandbox' : 'live'), 50, function () {
             $response = Http::asForm()
-                ->withBasicAuth(
-                    (string) config('services.bog.client_id'),
-                    (string) config('services.bog.client_secret')
-                )
+                ->withBasicAuth($this->clientId(), $this->clientSecret())
                 ->timeout(15)
                 ->post($this->tokenUrl(), [
                     'grant_type' => 'client_credentials',
