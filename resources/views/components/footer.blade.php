@@ -3,14 +3,19 @@
     <div class="footer-widget-area">
         <div class="container container-wide">
             <div class="row mtn-40">
+
                 <div class="col-sm-6 col-lg-3 mx-auto">
                     <div class="widget-item">
-                        <h4 class="widget-title text-center">ონლაინ მაღაზია</h4>
+                        {{-- <h4 class="widget-title text-center">ონლაინ მაღაზია</h4> --}}
                         <div class="widget-body">
+                            <a href="{{asset('assets/regit_საიტის_პოლიტიკები.pdf')}}" target="_blank"
+                            class=" text-white mb-3 d-flex justify-content-center">
+                            წესები და პირობები
+                            </a>
                             <ul class="d-flex justify-content-center">
                                 <li>
                                     <div class="icon-box">
-                                        <a href="tel:+9955957100005" class="">
+                                        <a href="tel:+995595710005" class="">
                                             <i class="ion-iphone"></i>
                                         </a>
                                     </div>

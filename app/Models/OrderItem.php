@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class OrderItem extends Model
+{
+    protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'price' => 'integer',
+            'quantity' => 'integer',
+            'line_total' => 'integer',
+            'with_installation' => 'boolean',
+        ];
+    }
+
+    public function installationLabel(): string
+    {
+        return $this->with_installation ? 'მონტაჟით' : 'მონტაჟის გარეშე';
+    }
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+}
