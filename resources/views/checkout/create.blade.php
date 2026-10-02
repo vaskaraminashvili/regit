@@ -225,6 +225,8 @@
                     return;
                 }
 
+
+
                 window.BOG.Calculator.open({
                     amount: amount,
                     onClose: function() {},

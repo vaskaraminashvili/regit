@@ -1,10 +1,10 @@
-@media(max-width: 500px){
+@media(max-width: 500px) {
     .logo_img {
         max-width: 80px;
     }
+
     .nav {
         flex-direction: column;
-
     }
 }
 
@@ -229,6 +229,7 @@
         opacity: 0;
         transform: translateY(18px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -332,4 +333,3 @@
     border-color: #eeb644;
     background: #fff9eb;
 }
-
