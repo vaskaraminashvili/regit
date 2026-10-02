@@ -59,6 +59,7 @@ class BogInstallmentCheckoutTest extends TestCase
             ->assertOk()
             ->assertSee('bog-sdk.js?version=2&client_id=10009502', false)
             ->assertSee('BOG.Calculator.open', false)
+            ->assertSee('bnpl: true', false)
             ->assertSee('successCb(result.data.orderId)', false)
             ->assertSee('return false;', false)
             ->assertSee('onComplete', false)
@@ -126,6 +127,13 @@ class BogInstallmentCheckoutTest extends TestCase
             ->assertOk()
             ->assertJsonPath('orderId', 'bog-order-123')
             ->assertJsonPath('demo', false);
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), '/payments/v1/ecommerce/orders')
+                && $request['payment_method'] === ['bnpl']
+                && ($request['config']['loan']['type'] ?? null) === 'standard'
+                && ($request['config']['loan']['month'] ?? null) === 6;
+        });
 
         $this->assertDatabaseHas('orders', [
             'user_id' => $user->id,

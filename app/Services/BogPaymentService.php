@@ -51,7 +51,7 @@ class BogPaymentService
             ])
             ->timeout(20)
             ->post($this->ordersUrl(), array_merge($payload, [
-                'payment_method' => ['bog_loan'],
+                'payment_method' => ['bnpl'],
                 'config' => [
                     'loan' => $loan,
                 ],

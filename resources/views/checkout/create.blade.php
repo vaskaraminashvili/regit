@@ -228,6 +228,7 @@
 
 
                 window.BOG.Calculator.open({
+                    bnpl: true,
                     amount: amount,
                     onClose: function() {},
                     onRequest: function(selected, successCb, closeCb) {
