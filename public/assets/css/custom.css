@@ -236,7 +236,30 @@
     }
 }
 
+.checkout-payments {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+}
+
+.bog-bnpl-button {
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: 0;
+    cursor: pointer;
+}
+
+.bog-bnpl-button img {
+    display: block;
+    height: 52px;
+    width: auto;
+}
+
 .checkout-installment {
+    width: 100%;
     padding-top: 24px;
     border-top: 1px solid #e1e1e1;
 }

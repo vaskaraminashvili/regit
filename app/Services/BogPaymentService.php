@@ -36,7 +36,7 @@ class BogPaymentService
         return (string) config('services.bog.secret_key');
     }
 
-    public function createInstallmentOrder(array $payload, int $months, ?string $discountCode = null): string
+    public function createInstallmentOrder(array $payload, int $months, ?string $discountCode = null, string $paymentMethod = 'bnpl'): string
     {
         $loan = [
             'type' => filled($discountCode) ? $discountCode : 'standard',
@@ -51,7 +51,7 @@ class BogPaymentService
             ])
             ->timeout(20)
             ->post($this->ordersUrl(), array_merge($payload, [
-                'payment_method' => ['bnpl'],
+                'payment_method' => [$paymentMethod],
                 'config' => [
                     'loan' => $loan,
                 ],

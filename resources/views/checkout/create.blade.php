@@ -45,23 +45,29 @@
                         </div>
                     </form>
 
-                    <div class="checkout-installment mt-4" data-sdk="{{ $bogPublicKey ? '1' : '0' }}"
+                    <div class="checkout-payments mt-4" data-sdk="{{ $bogPublicKey ? '1' : '0' }}"
                         data-configured="{{ $bogConfigured ? '1' : '0' }}" data-sandbox="{{ $bogSandbox ? '1' : '0' }}">
-                        <div class="checkout-installment__card">
-                            <img src="{{ asset('assets/installment/bog.jpeg') }}" alt="Bank of Georgia"
-                                class="checkout-installment__logo">
-                            <div class="checkout-installment__copy">
-                                <p class="checkout-installment__title mb-1">განვადება საქართველოს ბანკით</p>
-                                <p class="checkout-installment__text mb-3">აირჩიეთ განვადების პირობები და გადაიხადეთ
-                                    ყოველთვიურად.</p>
-                                @if ($bogSandbox && !$bogPublicKey)
-                                    <span class="checkout-installment__badge">Sandbox / ტესტი</span>
-                                @endif
-                            </div>
-                        </div>
-                        <button type="button" id="bog-installment-button" class="btn btn-brand mt-3">
-                            მოითხოვე განვადება
+                        <button type="button" id="bog-bnpl-button" class="bog-bnpl-button">
+                            <img src="{{ asset('assets/installment/bog-bnpl-button.png') }}" alt="ნაწილ-ნაწილ გადახდა">
                         </button>
+
+                        <div class="checkout-installment">
+                            <div class="checkout-installment__card">
+                                <img src="{{ asset('assets/installment/bog.jpeg') }}" alt="Bank of Georgia"
+                                    class="checkout-installment__logo">
+                                <div class="checkout-installment__copy">
+                                    <p class="checkout-installment__title mb-1">განვადება საქართველოს ბანკით</p>
+                                    <p class="checkout-installment__text mb-3">აირჩიეთ განვადების პირობები. მინიმალური
+                                        ვადა 5 თვეა.</p>
+                                    @if ($bogSandbox && !$bogPublicKey)
+                                        <span class="checkout-installment__badge">Sandbox / ტესტი</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <button type="button" id="bog-installment-button" class="btn btn-brand mt-3">
+                                მოითხოვე განვადება
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-5">
@@ -95,9 +101,10 @@
             <h3 class="bog-demo-modal__title">აირჩიეთ განვადების ვადა</h3>
             <p class="bog-demo-modal__text">ლოკალური sandbox ტესტი — ბანკის რეალური გასაღებები ჯერ არ არის ჩართული.</p>
             <div class="bog-demo-modal__plans">
-                <button type="button" class="bog-demo-plan" data-month="3">3 თვე</button>
-                <button type="button" class="bog-demo-plan" data-month="6">6 თვე</button>
-                <button type="button" class="bog-demo-plan" data-month="12">12 თვე</button>
+                <button type="button" class="bog-demo-plan" data-plan="bnpl" data-month="4" data-code="ZERO" hidden>4 თვე</button>
+                <button type="button" class="bog-demo-plan" data-plan="installment" data-month="5" data-code="standard">5 თვე</button>
+                <button type="button" class="bog-demo-plan" data-plan="installment" data-month="6" data-code="standard">6 თვე</button>
+                <button type="button" class="bog-demo-plan" data-plan="installment" data-month="12" data-code="standard">12 თვე</button>
             </div>
             <button type="button" id="bog-demo-close" class="btn btn-outline-secondary mt-3">დახურვა</button>
         </div>
@@ -110,8 +117,9 @@
         (function() {
             var form = document.getElementById('checkout-form');
             var errorBox = document.getElementById('checkout-installment-error');
-            var button = document.getElementById('bog-installment-button');
-            var box = document.querySelector('.checkout-installment');
+            var bnplButton = document.getElementById('bog-bnpl-button');
+            var installmentButton = document.getElementById('bog-installment-button');
+            var box = document.querySelector('.checkout-payments');
             var demoModal = document.getElementById('bog-demo-modal');
             var sdkEnabled = box.getAttribute('data-sdk') === '1';
             var amount = {{ (int) $total }};
@@ -140,9 +148,10 @@
                 }
             }
 
-            function requestInstallment(month, discountCode, successCb, closeCb) {
+            function requestInstallment(month, discountCode, successCb, closeCb, plan) {
                 var body = new FormData(form);
                 body.append('month', month);
+                body.append('plan', plan || 'bnpl');
                 if (discountCode) {
                     body.append('discount_code', discountCode);
                 }
@@ -205,7 +214,14 @@
                     });
             }
 
-            function openDemoModal() {
+            function openDemoModal(plan) {
+                var installment = plan === 'installment';
+                demoModal.querySelector('.bog-demo-modal__title').textContent = installment ?
+                    'აირჩიეთ განვადების ვადა' :
+                    'ნაწილ-ნაწილ გადახდა';
+                document.querySelectorAll('.bog-demo-plan').forEach(function(planButton) {
+                    planButton.hidden = planButton.getAttribute('data-plan') !== plan;
+                });
                 demoModal.hidden = false;
             }
 
@@ -213,26 +229,75 @@
                 demoModal.hidden = true;
             }
 
-            function openCalculator() {
-                hideError();
+            function limitInstallmentMonths(data) {
+                var changed = false;
 
-                if (!form.reportValidity()) {
+                if (!data || typeof data !== 'object') {
+                    return false;
+                }
+
+                if (Array.isArray(data.discounts) && data.discounts.some(function(item) {
+                        return item && item.month != null;
+                    })) {
+                    data.discounts = data.discounts.filter(function(item) {
+                        return Number(item.month) >= 5;
+                    });
+                    changed = true;
+                }
+
+                if (data.ranges && limitInstallmentMonths(data.ranges)) {
+                    changed = true;
+                }
+
+                return changed;
+            }
+
+            function openCalculator(options, limitMonths) {
+                if (!limitMonths) {
+                    window.BOG.Calculator.open(options);
                     return;
                 }
 
-                if (!sdkEnabled || !window.BOG || !window.BOG.Calculator) {
-                    openDemoModal();
-                    return;
+                var originalParse = JSON.parse;
+                var restored = false;
+
+                function restore() {
+                    if (restored) {
+                        return;
+                    }
+                    restored = true;
+                    JSON.parse = originalParse;
                 }
 
+                JSON.parse = function(text, reviver) {
+                    var data = originalParse.call(JSON, text, reviver);
+                    if (limitInstallmentMonths(data)) {
+                        restore();
+                    }
+                    return data;
+                };
 
+                window.setTimeout(restore, 10000);
+                window.BOG.Calculator.open(options);
+            }
 
-                window.BOG.Calculator.open({
-                    bnpl: true,
+            function calculatorOptions(plan) {
+                var installment = plan === 'installment';
+
+                return {
                     amount: amount,
+                    bnpl: installment ? false : true,
                     onClose: function() {},
                     onRequest: function(selected, successCb, closeCb) {
-                        requestInstallment(selected.month, selected.discount_code, successCb, closeCb);
+                        if (installment && Number(selected.month) < 5) {
+                            showError('განვადების მინიმალური ვადა 5 თვეა.');
+                            if (typeof closeCb === 'function') {
+                                closeCb();
+                            }
+                            return false;
+                        }
+
+                        requestInstallment(selected.month, selected.discount_code, successCb, closeCb, plan);
                         return false;
                     },
                     onComplete: function(payload) {
@@ -241,10 +306,30 @@
                             return false;
                         }
                     }
-                });
+                };
             }
 
-            button.addEventListener('click', openCalculator);
+            function startPayment(plan) {
+                hideError();
+
+                if (!form.reportValidity()) {
+                    return;
+                }
+
+                if (!sdkEnabled || !window.BOG || !window.BOG.Calculator) {
+                    openDemoModal(plan);
+                    return;
+                }
+
+                openCalculator(calculatorOptions(plan), plan === 'installment');
+            }
+
+            bnplButton.addEventListener('click', function() {
+                startPayment('bnpl');
+            });
+            installmentButton.addEventListener('click', function() {
+                startPayment('installment');
+            });
             document.getElementById('bog-demo-close').addEventListener('click', closeDemoModal);
             demoModal.addEventListener('click', function(event) {
                 if (event.target === demoModal) {
@@ -254,7 +339,13 @@
             document.querySelectorAll('.bog-demo-plan').forEach(function(planButton) {
                 planButton.addEventListener('click', function() {
                     closeDemoModal();
-                    requestInstallment(planButton.getAttribute('data-month'), 'standard');
+                    requestInstallment(
+                        planButton.getAttribute('data-month'),
+                        planButton.getAttribute('data-code'),
+                        null,
+                        null,
+                        planButton.getAttribute('data-plan')
+                    );
                 });
             });
         })();

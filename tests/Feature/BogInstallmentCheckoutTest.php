@@ -33,6 +33,9 @@ class BogInstallmentCheckoutTest extends TestCase
             ->get(route('checkout.create'))
             ->assertOk()
             ->assertSee('განვადება საქართველოს ბანკით')
+            ->assertSee('ნაწილ-ნაწილ გადახდა')
+            ->assertSee('მინიმალური ვადა 5 თვეა')
+            ->assertSee('bog-bnpl-button.png', false)
             ->assertSee('მოითხოვე განვადება')
             ->assertSee('Sandbox / ტესტი')
             ->assertSee('აირჩიეთ განვადების ვადა');
@@ -59,7 +62,9 @@ class BogInstallmentCheckoutTest extends TestCase
             ->assertOk()
             ->assertSee('bog-sdk.js?version=2&client_id=10009502', false)
             ->assertSee('BOG.Calculator.open', false)
-            ->assertSee('bnpl: true', false)
+            ->assertSee('bnpl: installment ? false : true', false)
+            ->assertSee('Number(item.month) >= 5', false)
+            ->assertSee('bog-bnpl-button', false)
             ->assertSee('successCb(result.data.orderId)', false)
             ->assertSee('return false;', false)
             ->assertSee('onComplete', false)
@@ -144,11 +149,74 @@ class BogInstallmentCheckoutTest extends TestCase
         ]);
     }
 
+    public function test_standard_installment_order_uses_bog_loan_and_rejects_short_terms(): void
+    {
+        $this->configureBog();
+
+        Http::fake([
+            'oauth2-sandbox.bog.ge/*' => Http::response([
+                'access_token' => 'test-token',
+                'token_type' => 'Bearer',
+                'expires_in' => 3600,
+            ]),
+            'api-sandbox.bog.ge/*' => Http::response([
+                'id' => 'bog-loan-456',
+            ]),
+        ]);
+
+        $user = User::factory()->create();
+        $product = $this->product();
+
+        $this->actingAs($user)
+            ->post(route('cart.add', $product), ['quantity' => 1])
+            ->assertRedirect();
+
+        $this->actingAs($user)
+            ->postJson(route('checkout.installment'), [
+                'name' => 'Test User',
+                'phone' => '555123456',
+                'city' => 'Tbilisi',
+                'address' => 'Test street 1',
+                'month' => 4,
+                'plan' => 'installment',
+                'discount_code' => 'standard',
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('month');
+
+        $this->assertDatabaseCount('orders', 0);
+
+        $this->actingAs($user)
+            ->post(route('cart.add', $product), ['quantity' => 1])
+            ->assertRedirect();
+
+        $this->actingAs($user)
+            ->postJson(route('checkout.installment'), [
+                'name' => 'Test User',
+                'phone' => '555123456',
+                'city' => 'Tbilisi',
+                'address' => 'Test street 1',
+                'month' => 5,
+                'plan' => 'installment',
+                'discount_code' => 'standard',
+            ])
+            ->assertOk()
+            ->assertJsonPath('orderId', 'bog-loan-456');
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), '/payments/v1/ecommerce/orders')
+                && $request['payment_method'] === ['bog_loan']
+                && ($request['config']['loan']['month'] ?? null) === 5;
+        });
+    }
+
     public function test_sandbox_demo_installment_works_without_credentials(): void
     {
         config([
             'services.bog.client_id' => null,
             'services.bog.client_secret' => null,
+            'services.bog.public_key' => null,
+            'services.bog.secret_key' => null,
             'services.bog.sandbox' => true,
         ]);
 

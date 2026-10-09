@@ -45,8 +45,9 @@ class OrderService
         $items = $this->cartItemsReadyForCheckout();
         $months = (int) $data['month'];
         $discountCode = filled($data['discount_code'] ?? null) ? (string) $data['discount_code'] : 'standard';
+        $bankMethod = ($data['plan'] ?? 'bnpl') === 'installment' ? 'bog_loan' : 'bnpl';
 
-        return DB::transaction(function () use ($user, $data, $items, $months, $discountCode, $demo) {
+        return DB::transaction(function () use ($user, $data, $items, $months, $discountCode, $demo, $bankMethod) {
             $order = $this->createOrder($user, $data, $items, [
                 'status' => $demo ? 'processing' : 'pending',
                 'payment_method' => 'bog_installment',
@@ -61,7 +62,8 @@ class OrderService
                     : $this->bog->createInstallmentOrder(
                         $this->bogOrderPayload($order),
                         $months,
-                        $discountCode
+                        $discountCode,
+                        $bankMethod
                     );
             } catch (RuntimeException $exception) {
                 throw ValidationException::withMessages([
