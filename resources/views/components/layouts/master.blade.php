@@ -147,6 +147,13 @@
                 <div class="res-mobile-menu mobile-menu">
 
                 </div>
+
+                @guest
+                    <ul class="mobile-auth-nav">
+                        <li><a href="{{ route('login') }}">შესვლა</a></li>
+                        <li><a href="{{ route('register') }}">რეგისტრაცია</a></li>
+                    </ul>
+                @endguest
             </div>
         </div>
     </aside>

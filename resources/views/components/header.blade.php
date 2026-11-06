@@ -4,7 +4,8 @@
         <div class="row align-items-center">
             <div class="col-2 col-sm-4 col-lg-2">
                 <div class="site-logo text-center text-sm-start">
-                    <a href="{{ route('home') }}"><img src="{{asset('assets/logo.png')}}" class="logo_img img-fluid" alt="Logo"/></a>
+                    <a href="{{ route('home') }}"><img src="{{ asset('assets/logo.png') }}" class="logo_img img-fluid"
+                            alt="Logo" /></a>
                 </div>
             </div>
 
@@ -12,9 +13,9 @@
                 <div class="site-navigation ms-4 ms-lg-0">
                     <ul class="main-menu nav">
                         <li><a href="{{ route('home') }}">მთავარი</a></li>
-                        <li><a href="{{route('pages.installation')}}">მონტაჟის სერვისი</a></li>
-                        <li><a href="{{route('pages.installment')}}">განვადება</a></li>
-                        <li><a href="{{route('pages.contact')}}">კონტაქტი</a></li>
+                        <li><a href="{{ route('pages.installation') }}">მონტაჟის სერვისი</a></li>
+                        <li><a href="{{ route('pages.installment') }}">განვადება</a></li>
+                        <li><a href="{{ route('pages.contact') }}">კონტაქტი</a></li>
                     </ul>
                 </div>
             </div>
@@ -24,16 +25,13 @@
                     <ul class="login-reg-nav nav d-none d-md-flex align-items-center">
                         @auth
                             <li class="dropdown user-account-dropdown">
-                                <a href="#"
-                                   class="dropdown-toggle user-account-toggle"
-                                   id="userAccountDropdown"
-                                   role="button"
-                                   data-bs-toggle="dropdown"
-                                   aria-expanded="false">
+                                <a href="#" class="dropdown-toggle user-account-toggle" id="userAccountDropdown"
+                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ auth()->user()->name }}
                                     <i class="fa fa-angle-down"></i>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end user-account-menu" aria-labelledby="userAccountDropdown">
+                                <ul class="dropdown-menu dropdown-menu-end user-account-menu"
+                                    aria-labelledby="userAccountDropdown">
                                     <li><a class="dropdown-item" href="{{ route('orders.index') }}">შეკვეთები</a></li>
                                     <li><a class="dropdown-item" href="{{ route('profile.edit') }}">პროფილი</a></li>
                                     <li>

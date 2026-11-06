@@ -71,6 +71,33 @@
     margin-right: 6px;
 }
 
+.mobile-auth-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0 30px 24px;
+}
+
+.mobile-auth-nav li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mobile-auth-nav li:last-child {
+    border-bottom: 0;
+}
+
+.mobile-auth-nav a {
+    display: block;
+    color: #303030;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 10px 0;
+    text-transform: capitalize;
+}
+
+.mobile-auth-nav a:hover {
+    color: #eeb644;
+}
+
 .order-status {
     display: inline-block;
     padding: 4px 10px;
