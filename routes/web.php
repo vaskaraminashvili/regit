@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::post('/checkout/installment', [CheckoutController::class, 'storeInstallment'])->name('checkout.installment');
+    Route::post('/checkout/tbc-installment', [CheckoutController::class, 'storeTbcInstallment'])->name('checkout.tbc-installment');
     Route::get('/checkout/installment/{order}/fail', [CheckoutController::class, 'installmentFail'])->name('checkout.installment.fail');
     Route::get('/orders/{order}/thank-you', [CheckoutController::class, 'thankYou'])->name('orders.thank-you');
 

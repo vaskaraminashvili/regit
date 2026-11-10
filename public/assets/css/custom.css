@@ -330,6 +330,47 @@
     font-weight: 700;
 }
 
+.checkout-installment__card {
+    align-items: flex-start;
+}
+
+.checkout-installment__card--tbc {
+    background: #eaf7fd;
+}
+
+.checkout-installment__btn {
+    color: #fff;
+    font-weight: 600;
+    border: 0;
+}
+
+.checkout-installment__btn--bog {
+    background: #f47b20;
+}
+
+.checkout-installment__btn--bog:hover,
+.checkout-installment__btn--bog:focus {
+    background: #d96a14;
+    color: #fff;
+}
+
+.checkout-installment__btn--tbc {
+    background: #00adee;
+}
+
+.checkout-installment__btn--tbc:hover,
+.checkout-installment__btn--tbc:focus {
+    background: #0094cc;
+    color: #fff;
+}
+
+.checkout-installment__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
 .bog-demo-modal {
     position: fixed;
     inset: 0;

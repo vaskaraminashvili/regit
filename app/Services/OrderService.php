@@ -13,7 +13,8 @@ class OrderService
 {
     public function __construct(
         protected CartService $cart,
-        protected BogPaymentService $bog
+        protected BogPaymentService $bog,
+        protected TbcInstallmentService $tbc
     ) {}
 
     public function placeOrder(User $user, array $data): Order
@@ -82,6 +83,31 @@ class OrderService
                 'bog_order_id' => $bogOrderId,
                 'demo' => $demo,
             ];
+        });
+    }
+
+    /** @return array{order: Order, redirect_url: string} */
+    public function placeTbcInstallmentOrder(User $user, array $data): array
+    {
+        $items = $this->cartItemsReadyForCheckout();
+
+        return DB::transaction(function () use ($user, $data, $items) {
+            $order = $this->createOrder($user, $data, $items, [
+                'status' => 'pending',
+                'payment_method' => 'tbc_installment',
+                'payment_status' => 'created',
+            ]);
+
+            try {
+                [$sessionId, $redirectUrl] = $this->tbc->createApplication($order);
+            } catch (RuntimeException $exception) {
+                throw ValidationException::withMessages(['installment' => $exception->getMessage()]);
+            }
+
+            $order->update(['tbc_session_id' => $sessionId]);
+            $this->cart->clear();
+
+            return ['order' => $order, 'redirect_url' => $redirectUrl];
         });
     }
 
