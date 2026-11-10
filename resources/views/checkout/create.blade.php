@@ -47,10 +47,6 @@
 
                     <div class="checkout-payments mt-4" data-sdk="{{ $bogPublicKey ? '1' : '0' }}"
                         data-configured="{{ $bogConfigured ? '1' : '0' }}" data-sandbox="{{ $bogSandbox ? '1' : '0' }}">
-                        <button type="button" id="bog-bnpl-button" class="bog-bnpl-button">
-                            <img src="{{ asset('assets/installment/bog-bnpl-button.png') }}" alt="ნაწილ-ნაწილ გადახდა">
-                        </button>
-
                         <div class="checkout-installment">
                             <div class="checkout-installment__card">
                                 <img src="{{ asset('assets/installment/bog.jpeg') }}" alt="Bank of Georgia"
@@ -60,14 +56,41 @@
                                     <p class="checkout-installment__text mb-3">აირჩიეთ განვადების პირობები. მინიმალური
                                         ვადა 5 თვეა.</p>
                                     @if ($bogSandbox && !$bogPublicKey)
-                                        <span class="checkout-installment__badge">Sandbox / ტესტი</span>
+                                        <span class="checkout-installment__badge mb-3">Sandbox / ტესტი</span>
                                     @endif
+                                    <div class="checkout-installment__actions">
+                                        <button type="button" id="bog-bnpl-button" class="bog-bnpl-button">
+                                            <img src="{{ asset('assets/installment/bog-bnpl-button.png') }}"
+                                                alt="ნაწილ-ნაწილ გადახდა">
+                                        </button>
+                                        <button type="button" id="bog-installment-button" class="btn checkout-installment__btn checkout-installment__btn--bog">
+                                            მოითხოვე განვადება
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <button type="button" id="bog-installment-button" class="btn btn-brand mt-3">
-                                მოითხოვე განვადება
-                            </button>
                         </div>
+
+                        @if ($tbcConfigured)
+                            {{-- TBC's own button CSS (tbcganvadeba.ge/assets/css/tbc-ganvadeba-button.css) returns HTML, not CSS, so the button is styled locally. --}}
+                            <div class="checkout-installment mt-4">
+                                <div class="checkout-installment__card checkout-installment__card--tbc">
+                                    <img src="{{ asset('assets/installment/tbc-logo.svg') }}" alt="TBC Bank"
+                                        class="checkout-installment__logo">
+                                    <div class="checkout-installment__copy">
+                                        <p class="checkout-installment__title mb-1">განვადება TBC ბანკით</p>
+                                        <p class="checkout-installment__text mb-3">გააფორმეთ განვადება ონლაინ, TBC
+                                            ბანკის გვერდზე გადასვლით.</p>
+                                        <div class="checkout-installment__actions">
+                                            <button type="button" id="tbc-installment-button"
+                                                class="tbc-installment-btn btn checkout-installment__btn checkout-installment__btn--tbc">
+                                                მოითხოვე განვადება
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="col-lg-5">
@@ -322,6 +345,40 @@
                 }
 
                 openCalculator(calculatorOptions(plan), plan === 'installment');
+            }
+
+            var tbcButton = document.getElementById('tbc-installment-button');
+            if (tbcButton) {
+                tbcButton.addEventListener('click', function() {
+                    hideError();
+                    if (!form.reportValidity()) {
+                        return;
+                    }
+                    tbcButton.disabled = true;
+                    fetch(@json(route('checkout.tbc-installment')), {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrf,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: new FormData(form)
+                        })
+                        .then(function(response) {
+                            return response.json().then(function(data) {
+                                if (response.ok && data.redirectUrl) {
+                                    window.location.href = data.redirectUrl;
+                                    return;
+                                }
+                                throw data;
+                            });
+                        })
+                        .catch(function(data) {
+                            tbcButton.disabled = false;
+                            showError((data && data.errors && Object.values(data.errors).flat().join('')) ||
+                                (data && data.message) || 'განვადების განაცხადი ვერ შეიქმნა.');
+                        });
+                });
             }
 
             bnplButton.addEventListener('click', function() {

@@ -35,6 +35,7 @@ class CheckoutController extends Controller
             'bogConfigured' => $this->bog->isConfigured(),
             'bogPublicKey' => config('services.bog.public_key') ?: config('services.bog.client_id'),
             'bogSandbox' => $this->bog->isSandbox(),
+            'tbcConfigured' => app(\App\Services\TbcInstallmentService::class)->isConfigured(),
         ]);
     }
 
@@ -56,6 +57,13 @@ class CheckoutController extends Controller
             'demo' => $result['demo'],
             'redirectUrl' => route('orders.thank-you', $result['order']),
         ]);
+    }
+
+    public function storeTbcInstallment(StoreCheckoutRequest $request): JsonResponse
+    {
+        $result = $this->orders->placeTbcInstallmentOrder($request->user(), $request->validated());
+
+        return response()->json(['redirectUrl' => $result['redirect_url']]);
     }
 
     public function installmentFail(Order $order): View

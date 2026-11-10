@@ -35,6 +35,14 @@ return [
         ],
     ],
 
+    'tbc' => [
+        'sandbox' => filter_var(env('TBC_SANDBOX', true), FILTER_VALIDATE_BOOLEAN),
+        'api_key' => env('TBC_API_KEY'),
+        'api_secret' => env('TBC_API_SECRET'),
+        'merchant_key' => env('TBC_MERCHANT_KEY'),
+        'campaign_id' => env('TBC_CAMPAIGN_ID'),
+    ],
+
     'bog' => [
         'sandbox' => filter_var(env('BOG_SANDBOX', true), FILTER_VALIDATE_BOOLEAN),
         'public_key' => env('BOG_PUBLIC_KEY'),
